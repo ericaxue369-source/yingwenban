@@ -34797,6 +34797,45 @@ const CEO_JOBS = {
       ai: "AI 会了解你的运动习惯、周末时间、活动偏好和期待的相处方式，帮助双方先确认基础安排是否合适。"
     },
     questions: ["你好，我是这项需求的找人助手。你平时喜欢哪些运动？", "周末的时间安排通常怎样？", "你期待怎样的运动搭子关系？"]
+  }, {
+    id: "d5-other-design",
+    type: "自定义需求",
+    customDemandType: "产品体验内测",
+    title: "招募 AI 日记产品内测用户",
+    publishedAt: "2026-10-14",
+    location: "线上",
+    time: "连续体验 7 天",
+    count: "12",
+    applyCount: 5,
+    completedCount: 2,
+    highMatchCount: 1,
+    aiStatus: "已训练",
+    summary: "邀请愿意认真记录生活、提供真实反馈的用户，共同完善一款 AI 日记产品。",
+    description: "我们正在测试一款帮助用户整理日常片段、回看情绪和建立个人记忆库的 AI 日记产品，希望邀请首批内测用户参与体验。",
+    target: "平时有记录习惯，愿意连续体验并分享真实使用感受的学生或年轻职场人。",
+    matchingCriteria: "愿意连续使用 7 天；能清楚描述使用场景与问题；愿意参与一次 30 分钟线上回访。",
+    participationRequirements: "线上参与，每天使用约 5 分钟；体验结束后填写反馈问卷并参加线上访谈。",
+    other: "内测名额有限，优先邀请对个人记录、情绪管理或 AI 工具有兴趣的用户。"
+  }, {
+    id: "d6-other-skill",
+    type: "自定义需求",
+    customDemandType: "技能交换",
+    title: "用品牌设计交换 AI 自动化搭建",
+    publishedAt: "2026-10-13",
+    location: "线上 / 上海",
+    time: "两周内完成一次交换",
+    budget: "技能互换",
+    count: "1",
+    applyCount: 3,
+    completedCount: 1,
+    highMatchCount: 1,
+    aiStatus: "已训练",
+    summary: "希望找到熟悉 AI 自动化流程的伙伴，用一套完整品牌视觉设计交换一次落地搭建支持。",
+    description: "我正在为一个个人创作项目完善工作流，希望将素材整理、内容生成和任务提醒串联起来；可提供品牌定位、视觉方向和基础设计支持作为交换。",
+    target: "熟悉 Notion、Make、Zapier 或脚本自动化，愿意一起拆解并搭建轻量工作流的伙伴。",
+    matchingCriteria: "有真实自动化搭建经验；能够清晰说明方案边界；重视互相交付与沟通节奏。",
+    participationRequirements: "先线上沟通目标和可交付内容；确认范围后在两周内完成一次协作交换。",
+    other: "如双方合作顺畅，可继续交流后续内容自动化与品牌迭代需求。"
   }],
   102: [{
     id: "j4",
@@ -44460,8 +44499,8 @@ function JobCard({
       background: "rgba(89,111,203,.12)"
     },
     "自定义需求": {
-      color: "#737373",
-      background: "rgba(115,115,115,.10)"
+      color: "#0F8FA8",
+      background: "rgba(15,143,168,.12)"
     }
   };
   const typeVisual = typeVisuals[demandTypeOf(job)] || typeVisuals["自定义需求"];
@@ -55066,7 +55105,6 @@ function RecruitmentJobDetailScreen({
   const listed = !!job.listed;
   const isPaused = !!job.paused;
   const deadlineClosed = demandIsDeadlineClosed(job);
-  const demandType = demandTypeOf(job);
   const statusText = !listed ? "待发布" : isPaused ? "已暂停" : deadlineClosed ? "报名已截止" : "进行中";
   const statusBg = !listed ? "rgba(245,158,11,.12)" : isPaused ? "rgba(0,0,0,.06)" : deadlineClosed ? "rgba(148,163,184,.14)" : "rgba(16,185,129,.1)";
   const statusColor = !listed ? "#d97706" : isPaused ? T.text3 : deadlineClosed ? (T._theme === "dark" ? "#CBD5E1" : "#64748B") : "#059669";
@@ -55102,32 +55140,8 @@ function RecruitmentJobDetailScreen({
       setConfirmPause(true);
     }
   };
-  const valueForField = field => {
-    if (field.k === "description") return demandDescriptionOf(job);
-    if (field.k === "target") return demandTargetOf(job);
-    if (field.k === "matchingCriteria") return demandExpectationOf(job);
-    if (field.k === "participationRequirements") return demandParticipationOf(job);
-    return job[field.k];
-  };
-  const detailSections = [{
-    title: "需求类型",
-    content: demandTypeLabelOf(job)
-  }, {
-    title: "报名截止时间",
-    content: demandDeadlineLabel(job.deadline) || "长期有效"
-  }, {
-    title: "找人助手沟通时长",
-    content: Number(job.aiDuration || job.durationMin) > 0 ? Number(job.aiDuration || job.durationMin) + " 分钟 · 每位报名者一次需求沟通机会" : "暂不设置 · 报名者可随时继续沟通"
-  }].concat(demandFieldsOf(demandType).filter(field => field.k !== "title").map(field => ({
-    title: field.label.replace(/[？?]/g, ""),
-    content: valueForField(field)
-  })).filter(section => section.content)).concat([{
-    title: "找人助手训练状态",
-    content: job.hasAiInterviewer ? job.aiStatus || "已训练" : "待训练"
-  }, {
-    title: "AI沟通策略",
-    content: job.flow || "未训练时使用需求类型默认沟通模板；训练后将展示发布者补充的沟通重点。"
-  }]);
+  // Match Explore's public request-detail content and ordering exactly.
+  const detailSections = demandViewerSections(job);
   return React.createElement('div', {
     style: {
       position: "absolute",
@@ -55162,16 +55176,16 @@ function RecruitmentJobDetailScreen({
     style: {
       flex: 1,
       overflowY: "auto",
-      padding: "16px 18px 120px"
+      padding: "0 18px 120px"
     }
   }, React.createElement('div', {
     style: {
       background: T.bgCard,
       borderRadius: T.radius,
-      padding: "18px",
+      padding: "20px",
       border: `1px solid ${T.border}`,
-      boxShadow: T.shadowCard,
-      marginBottom: 12
+      boxShadow: "0 2px 16px rgba(159,151,235,.07)",
+      marginBottom: 14
     }
   }, React.createElement('div', {
     style: {
@@ -55223,9 +55237,9 @@ function RecruitmentJobDetailScreen({
     style: {
       background: T.bgCard,
       borderRadius: T.radius,
-      padding: "18px",
+      padding: "20px",
       border: `1px solid ${T.border}`,
-      boxShadow: T.shadowCard
+      boxShadow: "0 2px 12px rgba(159,151,235,.05)"
     }
   }, detailSections.map((section, idx) => React.createElement(React.Fragment, {
     key: section.title
@@ -55236,7 +55250,7 @@ function RecruitmentJobDetailScreen({
     style: {
       height: 1,
       background: T.hairline,
-      marginBottom: 18
+      marginBottom: 20
     }
   }) : null)))), React.createElement('div', {
     style: {
@@ -56459,8 +56473,8 @@ function RecruitmentScreen({
         "活动招募": "#C97632",
         "找场地": "#12916C",
         "社团/社群招新": "#596FCB",
-        "自定义需求": "#737373"
-      })[demandTypeOf(job)] || "#737373";
+        "自定义需求": "#0F8FA8"
+      })[demandTypeOf(job)] || "#0F8FA8";
       return React.createElement('div', {
         key: job.id,
         onClick: () => setDetailJob(job),
